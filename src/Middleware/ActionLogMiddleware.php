@@ -80,7 +80,9 @@ class ActionLogMiddleware implements MiddlewareInterface
                 $log = $this->app->call($prepare, compact('log')) ?? $log;
             }
 
-            $this->actionLogService->saveLog($log);
+            if ($log !== false) {
+                $this->actionLogService->saveLog($log);
+            }
         }
 
         return $response;

@@ -144,6 +144,19 @@ $router->group('admin')
     // ...
 ```
 
+If you want to ignore some actions, just return FALSE in prepare log handler:
+
+```php
+    'prepare_log' => function (ActionLog $log, UserService $userService) {
+        // ...
+        
+        if ($log->getTask() === '...') {
+            // This log will not save
+            return false;
+        }
+    }
+```
+
 ## Manually Log
 
 Just inject `ActionLogService` to do this.
@@ -227,4 +240,3 @@ Register this subscriber to `etc/app/main.php`:
 The text you return from event will show at table list:
 
 ![tasks](https://github.com/lyrasoft/luna-action-log/assets/1639206/6c47f458-9432-4336-89bd-61ad3e776bf0)
-
