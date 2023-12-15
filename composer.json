@@ -4,7 +4,8 @@
     "type": "windwalker-package",
     "require": {
         "php": ">=8.2",
-        "lyrasoft/luna": "^2.0",
+        "lyrasoft/luna": "^2.1",
+        "lyrasoft/toolkit": "^1.1",
         "openspout/openspout": "^4.22"
     },
     "license": "MIT",
@@ -19,5 +20,15 @@
             "email": "asika32764@gmail.com"
         }
     ],
-    "minimum-stability": "beta"
+    "minimum-stability": "beta",
+    "extra": {
+        "windwalker": {
+            "packages": [
+                "Lyrasoft\\ActionLog\\ActionLogPackage"
+            ],
+            "modules": [
+                "src/Module"
+            ]
+        }
+    }
 }
