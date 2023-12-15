@@ -55,8 +55,6 @@ php windwalker pkg:install lyrasoft/action-log -t lang
 
 Edit `resources/menu/admin/sidemenu.menu.php`
 
-Ues Type mode:
-
 ```php
 // Action Log
 $menu->link('操作記錄')
@@ -197,19 +195,20 @@ class ActionLogSubscriber
     {
         $text = &$event->getTaskText();
         $log = $event->getLog();
+        $task = $log->getTask();
 
         // Custom you task text
         
         // Same examples
-        if ($text === 'relativeContracts') {
+        if ($task === 'relativeContracts') {
             $text = '相關合約操作';
         }
 
-        if ($text === 'relativeRentals') {
+        if ($task === 'relativeRentals') {
             $text = '相關委託操作';
         }
 
-        if ($text === 'addToCart') {
+        if ($task === 'addToCart') {
             $text = '加入購物車';
         }
     }
