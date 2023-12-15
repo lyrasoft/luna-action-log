@@ -40,16 +40,16 @@ class ActionLogMiddleware implements MiddlewareInterface
             ->allowedTypes('bool');
 
         $resolver->define('max_time')
-            ->default('3months')
-            ->allowedTypes('string');
+            ->default(null)
+            ->allowedTypes('string', 'null');
 
         $resolver->define('clear_chance')
-            ->default(1)
-            ->allowedTypes('int');
+            ->default(null)
+            ->allowedTypes('int', 'null');
 
         $resolver->define('clear_chance_base')
-            ->default(100)
-            ->allowedTypes('int');
+            ->default(null)
+            ->allowedTypes('int', 'null');
 
         $resolver->define('prepare_log')
             ->default(null)

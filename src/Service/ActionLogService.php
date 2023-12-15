@@ -15,6 +15,7 @@ use Windwalker\Core\Application\Context\AppRequestInterface;
 use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Http\AppRequest;
 use Windwalker\Core\Http\Browser;
+use Windwalker\Event\EventAwareInterface;
 use Windwalker\ORM\ORM;
 use Windwalker\Session\Session;
 use Windwalker\Utilities\Str;
@@ -22,7 +23,7 @@ use Windwalker\Utilities\TypeCast;
 
 use function Windwalker\chronos;
 
-class ActionLogService
+class ActionLogService implements EventAwareInterface
 {
     use CoreEventAwareTrait;
 
@@ -48,7 +49,7 @@ class ActionLogService
     }
 
     /**
-     * @param  AppRequestInterface     $appRequest
+     * @param  AppRequestInterface  $appRequest
      * @param  ResponseInterface|null  $response
      *
      * @return  ActionLog
@@ -112,13 +113,19 @@ class ActionLogService
         return $log;
     }
 
-    public function clearExpiredIfTriggered(?string $reserveTime = null, int $chance = 1, int $changeBase = 100): void
-    {
-        if (random_int(1, $changeBase) <= $chance) {
+    public function clearExpiredIfTriggered(
+        ?string $reserveTime = null,
+        ?int $chance = null,
+        ?int $changeBase = null
+    ): void {
+        $chance ??= $this->app->config('action_log.auto_clear.chance') ?? 1;
+        $changeBase ??= $this->app->config('action_log.auto_clear.chance_base') ?? 100;
+
+        if (random_int(1, (int) $changeBase) <= (int) $chance) {
             return;
         }
 
-        $this->clearExpired($reserveTime ?? env('ACTION_LOG_MAX_TIME'));
+        $this->clearExpired($reserveTime ?? $this->app->config('action_log.reserve_max_time') ?? '3months');
     }
 
     public function clearExpired(string $reserveTime = '3months'): void
@@ -136,7 +143,7 @@ class ActionLogService
     {
         $taskText = $log->getTask() ?: $log->getControllerTask();
 
-        $this->emit(
+        $event = $this->emit(
             FormatTaskEvent::class,
             compact(
                 'log',
@@ -144,14 +151,14 @@ class ActionLogService
             )
         );
 
-        return $taskText;
+        return $event->getTaskText();
     }
 
     public function formatEntity(ActionLog $log): string
     {
-        $entityText = '';
+        $entityText = Str::removeRight($log->getControllerShortClass(), 'Controller');
 
-        $this->emit(
+        $event = $this->emit(
             FormatEntityEvent::class,
             compact(
                 'log',
@@ -159,7 +166,7 @@ class ActionLogService
             )
         );
 
-        return $entityText;
+        return $event->getEntityText();
     }
 
     protected function getController(): string
