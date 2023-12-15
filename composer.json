@@ -1,0 +1,23 @@
+{
+    "name": "lyrasoft/action-log",
+    "description": "LYRASOFT Action Log Package",
+    "type": "windwalker-package",
+    "require": {
+        "php": ">=8.2",
+        "lyrasoft/luna": "^2.0",
+        "openspout/openspout": "^4.22"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Lyrasoft\\ActionLog\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Simon Asika",
+            "email": "asika32764@gmail.com"
+        }
+    ],
+    "minimum-stability": "beta"
+}
