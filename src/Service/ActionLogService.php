@@ -67,7 +67,7 @@ class ActionLogService implements EventAwareInterface
         $stage = $route->getNamespace();
 
         $log = new ActionLog();
-        $log->setUserId($user->getId() ?: '');
+        $log->setUserId((string) ($user->getId() ?: ''));
         $log->setEmail($user->getEmail());
         $log->setName($user->getName());
         $log->setStage($stage);
