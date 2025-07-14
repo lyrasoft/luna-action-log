@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\ActionLog\Repository;
 
-use App\Entity\User;
+use Lyrasoft\Luna\Entity\User;
 use Lyrasoft\ActionLog\Entity\ActionLog;
 use Unicorn\Attributes\ConfigureAction;
 use Unicorn\Attributes\Repository;
