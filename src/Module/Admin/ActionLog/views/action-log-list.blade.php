@@ -117,28 +117,28 @@ $browser = $app->retrieve(Browser::class);
                     <tr>
                         {{-- Checkbox --}}
                         <td>
-                            <x-row-checkbox :row="$i" :id="$item->id()"></x-row-checkbox>
+                            <x-row-checkbox :row="$i" :id="$item->id"></x-row-checkbox>
                         </td>
 
                         <td>
                             <div>
-                                {{ $chronos->toLocalFormat($item->time(), 'Y-m-d H:i:s') }}
+                                {{ $chronos->toLocalFormat($item->time, 'Y-m-d H:i:s') }}
                             </div>
                             <div class="small">
-                                ({{ $item->id() }})
+                                ({{ $item->id }})
                             </div>
                         </td>
 
                         <td>
-                            {{ $item->ip() }}
+                            {{ $item->ip }}
                         </td>
 
                         <td>
                             <div>
-                                {{ $user?->name() ?? $item->username() ?: $item->email() }}
+                                {{ $user?->name ?? $item->username ?: $item->email }}
                             </div>
                             <div class="text-muted small">
-                                {{ $user?->username() ?: $item->email() }}
+                                {{ $user?->username ?: $item->email }}
                             </div>
                         </td>
 
@@ -151,15 +151,15 @@ $browser = $app->retrieve(Browser::class);
                         </td>
 
                         <td class="text-wrap">
-                            {!! $item->ids() !!}
+                            {!! $item->ids !!}
                         </td>
 
                         <td>
-                            @if ($item->device())
-                                {{ $item->device() }}
+                            @if ($item->device)
+                                {{ $item->device }}
                             @else
-                                {{ $browser->device($item->ua()) }}
-                                ({{ $browser->platform($item->ua()) }})
+                                {{ $browser->device($item->ua) }}
+                                ({{ $browser->platform($item->ua) }})
                             @endif
                         </td>
                     </tr>
