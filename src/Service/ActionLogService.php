@@ -76,39 +76,35 @@ class ActionLogService implements EventAwareInterface
         $log->route = $route->getName();
 
         if ($appRequest instanceof AppRequest) {
-            $log->setMethod($appRequest->getOverrideMethod());
+            $log->method = $appRequest->getOverrideMethod();
         }
 
         if (method_exists($user, 'getUsername')) {
-            $log->setUsername($user->username);
+            $log->username = $user->username;
         }
 
         if ($this->session->isStarted()) {
-            $log->setSessionId((string) $this->session->getId());
+            $log->sessionId = (string)$this->session->getId();
         }
 
         if ($response) {
-            $log->setStatus($response->getStatusCode());
+            $log->status = $response->getStatusCode();
         }
 
-        $log->setDevice(
-            sprintf(
-                '%s (%s)',
-                $this->browser->device(),
-                $this->browser->platform()
-            )
+        $log->device = sprintf(
+            '%s (%s)',
+            $this->browser->device(),
+            $this->browser->platform()
         );
-        $log->setUrl($appRequest->getSystemUri()->full());
-        $log->setTask(TypeCast::forceString($appRequest->input('task')));
-        $log->setIds(
-            json_encode(
-                $input['id'] ?? $input['ids'] ?? $input['item']['id'] ?? null
-            )
+        $log->url = $appRequest->getSystemUri()->full();
+        $log->task = TypeCast::forceString($appRequest->input('task'));
+        $log->ids = json_encode(
+            $input['id'] ?? $input['ids'] ?? $input['item']['id'] ?? null
         );
-        $log->setUa($appRequest->getHeader('user-agent'));
-        $log->setReferrer($request->getServerParams()['HTTP_REFERER'] ?? '');
-        $log->setBody($appRequest->input());
-        $log->setTime('now');
+        $log->ua = $appRequest->getHeader('user-agent');
+        $log->referrer = $request->getServerParams()['HTTP_REFERER'] ?? '';
+        $log->body = $appRequest->input();
+        $log->time = 'now';
 
         return $log;
     }

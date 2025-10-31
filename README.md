@@ -135,7 +135,7 @@ $router->group('admin')
             'prepare_log' => function (ActionLog $log, UserService $userService) {
                 $user = $userService->getUser();
                 
-                $log->setName($user->firstName . ' ' . $user->lastName);
+                $log->name = $user->firstName . ' ' . $user->lastName;
             }
         ]
     )
