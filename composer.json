@@ -3,8 +3,8 @@
     "description": "LYRASOFT Action Log Package",
     "type": "windwalker-package",
     "require": {
-        "php": ">=8.2",
-        "lyrasoft/luna": "^2.1",
+        "php": ">=8.4.6",
+        "lyrasoft/luna": "^2.2",
         "lyrasoft/toolkit": "^1.1",
         "openspout/openspout": "^4.22"
     },

@@ -67,13 +67,13 @@ class ActionLogService implements EventAwareInterface
         $stage = $route->getNamespace();
 
         $log = new ActionLog();
-        $log->setUserId((string) ($user->getId() ?: ''));
-        $log->setEmail($user->getEmail());
-        $log->setName($user->getName());
-        $log->setStage($stage);
-        $log->setIp($appRequest->getClientIP());
-        $log->setController($this->getController());
-        $log->setRoute($route->getName());
+        $log->userId = (string) ($user->getId() ?: '');
+        $log->email = $user->getEmail();
+        $log->name = $user->getName();
+        $log->stage = $stage;
+        $log->ip = $appRequest->getClientIP();
+        $log->controller = $this->getController();
+        $log->route = $route->getName();
 
         if ($appRequest instanceof AppRequest) {
             $log->setMethod($appRequest->getOverrideMethod());
