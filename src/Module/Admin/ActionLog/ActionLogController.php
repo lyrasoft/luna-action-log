@@ -90,22 +90,22 @@ class ActionLogController
                     /** @var ?User $user */
                     $user = $orm->toEntityOrNull(User::class, $item->user);
 
-                    $row->setRowCell('id', $item->getId());
-                    $row->setRowCell('time', $item->getTime()->format('Y/m/d H:i:s'));
-                    $row->setRowCell('session_id', $item->getSessionId());
-                    $row->setRowCell('user_id', $item->getUserId());
+                    $row->setRowCell('id', $item->id);
+                    $row->setRowCell('time', $item->time->format('Y/m/d H:i:s'));
+                    $row->setRowCell('session_id', $item->sessionId);
+                    $row->setRowCell('user_id', $item->userId);
                     $row->setRowCell('username', $user?->username ?? '');
-                    $row->setRowCell('name', $item->getName());
-                    $row->setRowCell('email', $item->getEmail());
-                    $row->setRowCell('ip', $item->getIp());
-                    $row->setRowCell('device', $item->getDevice() ?: $getDevice($item->getUa()));
-                    $row->setRowCell('ua', $item->getUa());
-                    $row->setRowCell('url', $item->getUrl());
-                    $row->setRowCell('status', $item->getStatus());
-                    $row->setRowCell('method', $item->getMethod());
-                    $row->setRowCell('controller', $item->getController());
-                    $row->setRowCell('task', $item->getTask());
-                    $row->setRowCell('ids', $item->getIds());
+                    $row->setRowCell('name', $item->name);
+                    $row->setRowCell('email', $item->email);
+                    $row->setRowCell('ip', $item->ip);
+                    $row->setRowCell('device', $item->device ?: $getDevice($item->ua));
+                    $row->setRowCell('ua', $item->ua);
+                    $row->setRowCell('url', $item->url);
+                    $row->setRowCell('status', $item->status);
+                    $row->setRowCell('method', $item->method);
+                    $row->setRowCell('controller', $item->controller);
+                    $row->setRowCell('task', $item->task);
+                    $row->setRowCell('ids', $item->ids);
                 }
             );
         }

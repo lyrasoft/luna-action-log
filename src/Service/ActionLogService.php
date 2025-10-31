@@ -67,9 +67,9 @@ class ActionLogService implements EventAwareInterface
         $stage = $route->getNamespace();
 
         $log = new ActionLog();
-        $log->userId = (string) ($user->getId() ?: '');
-        $log->email = $user->getEmail();
-        $log->name = $user->getName();
+        $log->userId = (string) ($user->id ?: '');
+        $log->email = $user->email;
+        $log->name = $user->name;
         $log->stage = $stage;
         $log->ip = $appRequest->getClientIP();
         $log->controller = $this->getController();
@@ -80,7 +80,7 @@ class ActionLogService implements EventAwareInterface
         }
 
         if (method_exists($user, 'getUsername')) {
-            $log->setUsername($user->getUsername());
+            $log->setUsername($user->username);
         }
 
         if ($this->session->isStarted()) {
@@ -141,7 +141,7 @@ class ActionLogService implements EventAwareInterface
 
     public function formatTask(ActionLog $log): string
     {
-        $taskText = $log->getTask() ?: $log->getControllerTask();
+        $taskText = $log->task ?: $log->getControllerTask();
 
         $event = $this->emit(
             FormatTaskEvent::class,
