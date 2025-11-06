@@ -11,6 +11,7 @@
   * [Configure Middleware](#configure-middleware)
     * [Prepare Log Handler](#prepare-log-handler)
   * [Manually Log](#manually-log)
+  * [Hide Sensitive Data](#hide-sensitive-data)
   * [View](#view)
     * [Pagination](#pagination)
     * [Limit Per-Page](#limit-per-page)
