@@ -22,6 +22,24 @@ static fn() => [
         'chance_base' => (int) env('ACTION_LOG_CLEAR_CHANCE_BASE', '100'),
     ],
 
+    'hidden_list' => [
+        /**
+         * The body fields to hide, this will find nested to hide every field matches
+         * this list.
+         * Type Can be string or \Closure(mixed $value, string $key, Collection $body).
+         */
+        'body' => [
+            'password',
+            'secret',
+        ],
+        /**
+         * Currently this no use.
+         */
+        'headers' => [
+            'authorization',
+        ],
+    ],
+
     'view' => [
         /**
          * Count total pages in admin list view.

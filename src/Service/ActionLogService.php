@@ -15,6 +15,7 @@ use Windwalker\Core\Application\Context\AppRequestInterface;
 use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Http\AppRequest;
 use Windwalker\Core\Http\BrowserNext;
+use Windwalker\Data\Collection;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\ORM\ORM;
 use Windwalker\Session\Session;
@@ -79,12 +80,12 @@ class ActionLogService implements EventAwareInterface
             $log->method = $appRequest->getOverrideMethod();
         }
 
-        if (method_exists($user, 'getUsername')) {
+        if (property_exists($user, 'username')) {
             $log->username = $user->username;
         }
 
         if ($this->session->isStarted()) {
-            $log->sessionId = (string)$this->session->getId();
+            $log->sessionId = (string) $this->session->getId();
         }
 
         if ($response) {
@@ -103,7 +104,7 @@ class ActionLogService implements EventAwareInterface
         );
         $log->ua = $appRequest->getHeader('user-agent');
         $log->referrer = $request->getServerParams()['HTTP_REFERER'] ?? '';
-        $log->body = $appRequest->input();
+        $log->body = $this->hideBody($appRequest->input());
         $log->time = 'now';
 
         return $log;
@@ -192,5 +193,39 @@ class ActionLogService implements EventAwareInterface
         }
 
         return TypeCast::forceString($controller);
+    }
+
+    protected function hideBody(Collection $body): Collection
+    {
+        $hiddenRules = $this->app->config('action_log.hidden_list.body');
+
+        if (!$hiddenRules) {
+            return $body;
+        }
+
+        return $body->walkRecursive(
+            function (&$v, $k) use ($body, $hiddenRules) {
+                foreach ($hiddenRules as $hiddenRule) {
+                    if (is_string($hiddenRule) && strtolower($k) === strtolower($hiddenRule)) {
+                        $v = '******';
+                        return;
+                    }
+
+                    if ($hiddenRule instanceof \Closure) {
+                        $result = $hiddenRule($v, $k, $body);
+
+                        if ($result === true) {
+                            $result = '******';
+                        }
+
+                        if ($result !== false && $result !== null) {
+                            $v = $result;
+
+                            return;
+                        }
+                    }
+                }
+            }
+        );
     }
 }
