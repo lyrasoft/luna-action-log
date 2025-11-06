@@ -135,7 +135,7 @@ $router->group('admin')
             'prepare_log' => function (ActionLog $log, UserService $userService) {
                 $user = $userService->getUser();
                 
-                $log->setName($user->getFirstName() . ' ' . $user->getLastName());
+                $log->name = $user->firstName . ' ' . $user->lastName;
             }
         ]
     )
@@ -195,7 +195,7 @@ class ActionLogSubscriber
     {
         $text = &$event->getTaskText();
         $log = $event->getLog();
-        $task = $log->getTask();
+        $task = $log->task;
 
         // Custom you task text
         

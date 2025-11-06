@@ -67,48 +67,44 @@ class ActionLogService implements EventAwareInterface
         $stage = $route->getNamespace();
 
         $log = new ActionLog();
-        $log->userId = (string) ($user->getId() ?: '');
-        $log->email = $user->getEmail();
-        $log->name = $user->getName();
+        $log->userId = (string) ($user->id ?: '');
+        $log->email = $user->email;
+        $log->name = $user->name;
         $log->stage = $stage;
         $log->ip = $appRequest->getClientIP();
         $log->controller = $this->getController();
         $log->route = $route->getName();
 
         if ($appRequest instanceof AppRequest) {
-            $log->setMethod($appRequest->getOverrideMethod());
+            $log->method = $appRequest->getOverrideMethod();
         }
 
         if (method_exists($user, 'getUsername')) {
-            $log->setUsername($user->getUsername());
+            $log->username = $user->username;
         }
 
         if ($this->session->isStarted()) {
-            $log->setSessionId((string) $this->session->getId());
+            $log->sessionId = (string)$this->session->getId();
         }
 
         if ($response) {
-            $log->setStatus($response->getStatusCode());
+            $log->status = $response->getStatusCode();
         }
 
-        $log->setDevice(
-            sprintf(
-                '%s (%s)',
-                $this->browser->device(),
-                $this->browser->platform()
-            )
+        $log->device = sprintf(
+            '%s (%s)',
+            $this->browser->device(),
+            $this->browser->platform()
         );
-        $log->setUrl($appRequest->getSystemUri()->full());
-        $log->setTask(TypeCast::forceString($appRequest->input('task')));
-        $log->setIds(
-            json_encode(
-                $input['id'] ?? $input['ids'] ?? $input['item']['id'] ?? null
-            )
+        $log->url = $appRequest->getSystemUri()->full();
+        $log->task = TypeCast::forceString($appRequest->input('task'));
+        $log->ids = json_encode(
+            $input['id'] ?? $input['ids'] ?? $input['item']['id'] ?? null
         );
-        $log->setUa($appRequest->getHeader('user-agent'));
-        $log->setReferrer($request->getServerParams()['HTTP_REFERER'] ?? '');
-        $log->setBody($appRequest->input());
-        $log->setTime('now');
+        $log->ua = $appRequest->getHeader('user-agent');
+        $log->referrer = $request->getServerParams()['HTTP_REFERER'] ?? '';
+        $log->body = $appRequest->input();
+        $log->time = 'now';
 
         return $log;
     }
@@ -141,7 +137,7 @@ class ActionLogService implements EventAwareInterface
 
     public function formatTask(ActionLog $log): string
     {
-        $taskText = $log->getTask() ?: $log->getControllerTask();
+        $taskText = $log->task ?: $log->getControllerTask();
 
         $event = $this->emit(
             FormatTaskEvent::class,
