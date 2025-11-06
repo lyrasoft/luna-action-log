@@ -90,6 +90,10 @@ $browser = $app->retrieve(BrowserNext::class);
                     </th>
 
                     <th>
+                        @lang('action.log.field.method')
+                    </th>
+
+                    <th>
                         @lang('action.log.field.action')
                     </th>
 
@@ -142,6 +146,12 @@ $browser = $app->retrieve(BrowserNext::class);
                             <div class="text-muted small">
                                 {{ $user?->username ?: $item->email }}
                             </div>
+                        </td>
+
+                        <td>
+                            <span class="badge text-bg-secondary">
+                                {{ $item->method }}
+                            </span>
                         </td>
 
                         <td>

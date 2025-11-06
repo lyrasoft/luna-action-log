@@ -35,6 +35,18 @@ class GridForm
             ->label($this->trans('action.log.field.user'))
             ->buttonText('<i class="far fa-user"></i>')
             ->onchange('this.form.submit()');
+
+        $form->add('action_log.method', ListField::class)
+            ->label($this->trans('action.log.field.method'))
+            ->option($this->trans('unicorn.select.placeholder'), '')
+            ->option('GET', 'GET')
+            ->option('POST', 'POST')
+            ->option('PUT', 'PUT')
+            ->option('DELETE', 'DELETE')
+            ->option('PATCH', 'PATCH')
+            ->option('HEAD', 'HEAD')
+            ->option('OPTIONS', 'OPTIONS')
+            ->onchange('this.form.submit()');
     }
 
     #[FormDefine]
