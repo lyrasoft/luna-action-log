@@ -185,6 +185,23 @@ $actionLogService->log($appRequest, $response ?? null);
 $log = $actionLogService->createLogItem($appRequest, $response ?? null);
 ```
 
+## Hide Sensitive Data
+
+Add this to config file to hide some sensitive data from log:
+
+```php
+// ...
+
+    'hidden_list' => [
+        'body' => [
+            'password',
+            'secret',
+            // Add more fields...
+        ],
+    ]
+
+```
+
 ## View
 
 ### Pagination
