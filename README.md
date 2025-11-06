@@ -2,6 +2,21 @@
 
 ![Action Log](https://github.com/lyrasoft/luna-action-log/assets/1639206/8b24f4f0-ba2f-4010-877c-161b3ad66275)
 
+<!-- TOC -->
+* [LYRASOFT Action Log Package](#lyrasoft-action-log-package)
+  * [Installation](#installation)
+  * [Register Admin Menu](#register-admin-menu)
+  * [Getting Started](#getting-started)
+    * [Auto Clear](#auto-clear)
+  * [Configure Middleware](#configure-middleware)
+    * [Prepare Log Handler](#prepare-log-handler)
+  * [Manually Log](#manually-log)
+  * [View](#view)
+    * [Pagination](#pagination)
+    * [Limit Per-Page](#limit-per-page)
+    * [Custom Task (Action) and Entity Display](#custom-task-action-and-entity-display)
+<!-- TOC -->
+
 ## Installation
 
 Install from composer
@@ -16,7 +31,7 @@ Then copy files to project
 php windwalker pkg:install lyrasoft/action-log -t routes -t migrations
 ```
 
-And run migrtions.
+And run migrations.
 
 Next, add Middleware to `routes/admin.route.php`
 
@@ -98,12 +113,10 @@ $router->group('admin')
     // ...
     ->middleware(
         ActionLogMiddleware::class,
-        options: [
-            'methods' => ['POST', 'DELETE'],
-            'enabled' => (bool) env('ACTION_LOG_ENABLE'),
-            'max_time' => '7days',
-            // ...
-        ]
+        methods: ['POST', 'DELETE'],
+        enabled: (bool) env('ACTION_LOG_ENABLE'),
+        maxTime: '7days',
+        // ...
     )
     // ...
 ```
@@ -172,7 +185,27 @@ $actionLogService->log($appRequest, $response ?? null);
 $log = $actionLogService->createLogItem($appRequest, $response ?? null);
 ```
 
-## Custom Task (Action) and Entity Render
+## View
+
+### Pagination
+
+By default, ActionLog will display total pages:
+
+![Image](https://github.com/user-attachments/assets/94904489-d15a-4b1c-b23c-5cdd4fd16a47)
+
+However, if you have a large number of logs, counting total rows may impact performance. 
+You can disable total count by setting `ACTION_LOG_COUNT_PAGES=0`in the `.env` or `.env.base` files.
+
+This will display a simple pagination without total pages:
+
+![Image](https://github.com/user-attachments/assets/cfa234f3-9692-4545-b3bf-c1235a2a0705)
+
+### Limit Per-Page
+
+Use `ACTION_LOG_DISPLAY_LIMIT=xx` in `.env` or `.env.base` to configure the number of items displayed per page.
+Default is `100`.
+
+### Custom Task (Action) and Entity Display
 
 By default, the admin list table shows task and entity by english programaticlly name.
 
@@ -193,38 +226,37 @@ class ActionLogSubscriber
     #[ListenTo(FormatTaskEvent::class)]
     public function formatTask(FormatTaskEvent $event): void
     {
-        $text = &$event->getTaskText();
-        $log = $event->getLog();
+        $log = $event->log;
         $task = $log->task;
 
         // Custom you task text
         
         // Same examples
         if ($task === 'relativeContracts') {
-            $text = '相關合約操作';
+            $event->taskText = '相關合約操作';
         }
 
         if ($task === 'relativeRentals') {
-            $text = '相關委託操作';
+            $event->taskText = '相關委託操作';
         }
 
         if ($task === 'addToCart') {
-            $text = '加入購物車';
+            $event->taskText = '加入購物車';
         }
     }
 
     #[ListenTo(FormatEntityEvent::class)]
     public function formatEntity(FormatEntityEvent $event): void
     {
-        $text = &$event->getEntityText();
         $log = $event->getLog();
 
         // Custom you entity text
+        $event->entityText = '...';
     }
 }
 ```
 
-Register this subscriber to `etc/app/main.php`:
+Register this subscriber to `etc/app/main.config.php`:
 
 ```php
 // ...

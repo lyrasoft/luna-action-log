@@ -17,14 +17,13 @@ namespace App\View;
  */
 
 use Lyrasoft\ActionLog\Entity\ActionLog;
-use Lyrasoft\ActionLog\Module\Admin\ActionLog\ActionLogListView;
 use Lyrasoft\ActionLog\Service\ActionLogService;
 use Lyrasoft\Luna\Entity\User;
 use Unicorn\Workflow\BasicStateWorkflow;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
-use Windwalker\Core\Http\Browser;
+use Windwalker\Core\Http\BrowserNext;
 use Windwalker\Core\Language\LangService;
 use Windwalker\Core\Router\Navigator;
 use Windwalker\Core\Router\SystemUri;
@@ -38,7 +37,8 @@ $workflow = $app->service(BasicStateWorkflow::class);
 
 $orm = $app->retrieve(ORM::class);
 $actionLogService = $app->retrieve(ActionLogService::class);
-$browser = $app->retrieve(Browser::class);
+$browser = $app->retrieve(BrowserNext::class);
+
 ?>
 
 @extends('admin.global.body-list')
@@ -64,11 +64,9 @@ $browser = $app->retrieve(Browser::class);
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
-                    {{-- Toggle --}}
                     <th style="width: 1%">
-                        <x-toggle-all></x-toggle-all>
-                    </th>
 
+                    </th>
                     <th>
                         <x-sort field="action_log.time">
                             @lang('action.log.field.time')
@@ -112,12 +110,16 @@ $browser = $app->retrieve(Browser::class);
                 <tbody>
                 @forelse($items as $i => $item)
                         <?php
-                        $user = $orm->toEntityOrNull(User::class, $item->user);
+                        $user = $orm->tryEntity(User::class, $item->user);
                         ?>
                     <tr>
-                        {{-- Checkbox --}}
                         <td>
-                            <x-row-checkbox :row="$i" :id="$item->id"></x-row-checkbox>
+                            <a class="btn btn-outline-secondary btn-sm"
+                                data-bs-toggle="tooltip"
+                                title="@lang('action.log.button.download')"
+                                href="{{ $nav->to('action_log_download')->id($item->id) }}">
+                                <i class="far fa-download"></i>
+                            </a>
                         </td>
 
                         <td>
@@ -176,7 +178,12 @@ $browser = $app->retrieve(Browser::class);
             </table>
 
             <div>
-                <x-pagination :pagination="$pagination"></x-pagination>
+                <x-pagination :pagination="$pagination">
+                    <x-slot name="end">
+                        <x-pagination-jump :pagination="$pagination" />
+                        <x-pagination-stats :pagination="$pagination" class="ms-0 ms-md-auto" />
+                    </x-slot>
+                </x-pagination>
             </div>
         </div>
 

@@ -14,7 +14,7 @@ use Windwalker\Core\Application\Context\AppContextInterface;
 use Windwalker\Core\Application\Context\AppRequestInterface;
 use Windwalker\Core\Event\CoreEventAwareTrait;
 use Windwalker\Core\Http\AppRequest;
-use Windwalker\Core\Http\Browser;
+use Windwalker\Core\Http\BrowserNext;
 use Windwalker\Event\EventAwareInterface;
 use Windwalker\ORM\ORM;
 use Windwalker\Session\Session;
@@ -31,7 +31,7 @@ class ActionLogService implements EventAwareInterface
         protected AppContextInterface $app,
         protected ORM $orm,
         protected UserService $userService,
-        protected Browser $browser,
+        protected BrowserNext $browser,
         protected ?Session $session = null,
     ) {
     }
@@ -93,8 +93,8 @@ class ActionLogService implements EventAwareInterface
 
         $log->device = sprintf(
             '%s (%s)',
-            $this->browser->device(),
-            $this->browser->platform()
+            $this->browser->deviceString(),
+            $this->browser->osString()
         );
         $log->url = $appRequest->getSystemUri()->full();
         $log->task = TypeCast::forceString($appRequest->input('task'));
@@ -117,7 +117,7 @@ class ActionLogService implements EventAwareInterface
         $chance ??= $this->app->config('action_log.auto_clear.chance') ?? 1;
         $changeBase ??= $this->app->config('action_log.auto_clear.chance_base') ?? 100;
 
-        if (random_int(1, (int) $changeBase) <= (int) $chance) {
+        if (random_int(1, (int) $changeBase) > (int) $chance) {
             return;
         }
 
@@ -140,14 +140,13 @@ class ActionLogService implements EventAwareInterface
         $taskText = $log->task ?: $log->getControllerTask();
 
         $event = $this->emit(
-            FormatTaskEvent::class,
-            compact(
-                'log',
-                'taskText'
+            new FormatTaskEvent(
+                log: $log,
+                taskText: $taskText
             )
         );
 
-        return $event->getTaskText();
+        return $event->taskText;
     }
 
     public function formatEntity(ActionLog $log): string
@@ -155,14 +154,13 @@ class ActionLogService implements EventAwareInterface
         $entityText = Str::removeRight($log->getControllerShortClass(), 'Controller');
 
         $event = $this->emit(
-            FormatEntityEvent::class,
-            compact(
-                'log',
-                'entityText'
+            new FormatEntityEvent(
+                log: $log,
+                entityText: $entityText
             )
         );
 
-        return $event->getEntityText();
+        return $event->entityText;
     }
 
     protected function getController(): string

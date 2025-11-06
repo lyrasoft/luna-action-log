@@ -58,7 +58,7 @@ class ActionLogListView implements ViewModelInterface, FilterAwareViewModelInter
 
         // Prepare Items
         $page     = $state->rememberFromRequest('page');
-        $limit    = $state->rememberFromRequest('limit') ?: 100;
+        $limit    = $state->rememberFromRequest('limit') ?: $app->config('action_log.view.display_limit') ?? 100;
         $filter   = (array) $state->rememberFromRequest('filter');
         $search   = (array) $state->rememberFromRequest('search');
         $ordering = $state->rememberFromRequest('list_ordering') ?? $this->getDefaultOrdering();
@@ -74,7 +74,10 @@ class ActionLogListView implements ViewModelInterface, FilterAwareViewModelInter
             ->limit($limit)
             ->setDefaultItemClass(ActionLog::class);
 
+        // Pagination
         $pagination = $items->getPagination();
+        $countPages = $app->config('action_log.view.count_pages') ?? true;
+        $pagination->simple(!$countPages);
 
         // Prepare Form
         $form = $this->formFactory->create(GridForm::class);

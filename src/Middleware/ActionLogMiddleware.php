@@ -24,6 +24,12 @@ class ActionLogMiddleware implements MiddlewareInterface
         protected AppRequest $appRequest,
         protected ActionLogService $actionLogService,
         protected ApplicationInterface $app,
+        protected string|array|null $methods = null,
+        protected bool $enabled = true,
+        protected ?string $maxTime = null,
+        protected ?int $clearChance = null,
+        protected ?int $clearChanceBase = null,
+        protected ?\Closure $prepareLog = null,
         array $options = []
     ) {
         $this->resolveOptions($options, $this->configureOptions(...));
@@ -32,27 +38,27 @@ class ActionLogMiddleware implements MiddlewareInterface
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->define('methods')
-            ->default(['POST', 'PUT', 'PATCH', 'DELETE'])
+            ->default($this->methods ?? ['POST', 'PUT', 'PATCH', 'DELETE'])
             ->allowedTypes('string', 'array', 'null');
 
         $resolver->define('enabled')
-            ->default(true)
+            ->default($this->enabled)
             ->allowedTypes('bool');
 
         $resolver->define('max_time')
-            ->default(null)
+            ->default($this->maxTime)
             ->allowedTypes('string', 'null');
 
         $resolver->define('clear_chance')
-            ->default(null)
+            ->default($this->clearChance)
             ->allowedTypes('int', 'null');
 
         $resolver->define('clear_chance_base')
-            ->default(null)
+            ->default($this->clearChanceBase)
             ->allowedTypes('int', 'null');
 
         $resolver->define('prepare_log')
-            ->default(null)
+            ->default($this->prepareLog)
             ->allowedTypes('callable', 'null');
     }
 
@@ -92,7 +98,7 @@ class ActionLogMiddleware implements MiddlewareInterface
     {
         $allows = $this->options['methods'];
 
-        if ($allows === null) {
+        if ($allows === null || $allows === '*') {
             return true;
         }
 

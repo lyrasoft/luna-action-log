@@ -12,12 +12,18 @@ use Lyrasoft\Toolkit\Spreadsheet\SpreadsheetKit;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
 use Windwalker\Core\Application\AppContext;
+use Windwalker\Core\Attributes\Assert;
 use Windwalker\Core\Attributes\Controller;
+use Windwalker\Core\Attributes\Request\Input;
+use Windwalker\Core\DateTime\ChronosService;
 use Windwalker\Core\Http\Browser;
 use Windwalker\DI\Attributes\Autowire;
+use Windwalker\Http\Response\AttachmentResponse;
 use Windwalker\ORM\ORM;
+use Windwalker\Stream\Stream;
 
 use function Windwalker\now;
+use function Windwalker\response;
 
 #[Controller()]
 class ActionLogController
@@ -111,5 +117,23 @@ class ActionLogController
         }
 
         $excel->finish();
+    }
+
+    public function download(
+        #[Input, Assert('required')] string $id,
+        ORM $orm,
+        ChronosService $chronosService
+    ): AttachmentResponse {
+        $log = $orm->mustFindOne(ActionLog::class, $id);
+        $time = $chronosService->toLocalFormat($log->time, 'Y-m-d-H-i-s');
+
+        return response()
+            ->attachment(
+                Stream::fromString(
+                    json_encode($log, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                )
+            )
+            ->withFilename("action-log-[{$log->id}]-{$time}.json")
+            ->withContentType('application/json');
     }
 }

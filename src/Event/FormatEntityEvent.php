@@ -6,34 +6,19 @@ namespace Lyrasoft\ActionLog\Event;
 
 use Lyrasoft\ActionLog\Entity\ActionLog;
 use Windwalker\Event\AbstractEvent;
+use Windwalker\Event\BaseEvent;
 
-class FormatEntityEvent extends AbstractEvent
+class FormatEntityEvent extends BaseEvent
 {
-    protected ActionLog $log;
-
-    protected string $entityText = '';
-
-    public function getLog(): ActionLog
+    public function __construct(public ActionLog $log, public string $entityText = '')
     {
-        return $this->log;
     }
 
-    public function setLog(ActionLog $log): static
-    {
-        $this->log = $log;
-
-        return $this;
-    }
-
+    /**
+     * @deprecated  Use public property instead
+     */
     public function &getEntityText(): string
     {
         return $this->entityText;
-    }
-
-    public function setEntityText(string $entityText): static
-    {
-        $this->entityText = $entityText;
-
-        return $this;
     }
 }
