@@ -205,6 +205,8 @@ class ActionLogService implements EventAwareInterface
 
         return $body->walkRecursive(
             function (&$v, $k) use ($body, $hiddenRules) {
+                $k = (string) $k;
+
                 foreach ($hiddenRules as $hiddenRule) {
                     if (is_string($hiddenRule) && strtolower($k) === strtolower($hiddenRule)) {
                         $v = '******';
